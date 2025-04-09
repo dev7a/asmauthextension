@@ -19,8 +19,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/extension"
-	"go.opentelemetry.io/collector/extension/extensionauth"
+	"go.opentelemetry.io/collector/extension/auth"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/credentials"
 )
 
 var (
@@ -28,7 +29,7 @@ var (
 	errInvalidSecretData = errors.New("invalid secret data: must be a JSON object with string values")
 )
 
-// secretsManagerAuthenticator implements the extensionauth.HTTPClient interface
+// secretsManagerAuthenticator implements the auth.Client interface
 type secretsManagerAuthenticator struct {
 	component.StartFunc
 	component.ShutdownFunc
@@ -176,7 +177,13 @@ func (a *secretsManagerAuthenticator) fetchHeadersFromAWS(ctx context.Context) e
 	return nil
 }
 
-// RoundTripper implements the extensionauth.HTTPClient interface
+// PerRPCCredentials implements the auth.Client interface
+func (a *secretsManagerAuthenticator) PerRPCCredentials() (credentials.PerRPCCredentials, error) {
+	// We don't support gRPC authentication
+	return nil, nil
+}
+
+// RoundTripper implements the auth.Client interface
 func (a *secretsManagerAuthenticator) RoundTripper(base http.RoundTripper) (http.RoundTripper, error) {
 	return &secretsManagerRoundTripper{
 		base:          base,
@@ -208,6 +215,6 @@ func (rt *secretsManagerRoundTripper) RoundTrip(req *http.Request) (*http.Respon
 
 // Ensure secretsManagerAuthenticator implements the required interfaces
 var (
-	_ extension.Extension      = (*secretsManagerAuthenticator)(nil)
-	_ extensionauth.HTTPClient = (*secretsManagerAuthenticator)(nil)
+	_ extension.Extension = (*secretsManagerAuthenticator)(nil)
+	_ auth.Client         = (*secretsManagerAuthenticator)(nil)
 )

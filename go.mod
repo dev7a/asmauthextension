@@ -14,11 +14,12 @@ require (
 	go.opentelemetry.io/collector/component/componenttest v0.119.0
 	go.opentelemetry.io/collector/confmap v1.25.0
 	go.opentelemetry.io/collector/extension v0.119.0
-	go.opentelemetry.io/collector/extension/extensionauth v1.29.0
+	go.opentelemetry.io/collector/extension/auth v0.119.0
 	go.opentelemetry.io/collector/extension/extensiontest v0.119.0
 	go.opentelemetry.io/collector/pdata v1.25.0
 	go.uber.org/goleak v1.3.0
 	go.uber.org/zap v1.27.0
+	google.golang.org/grpc v1.71.0
 )
 
 require (
@@ -55,18 +56,16 @@ require (
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250115164207-1a7da9e5054f // indirect
-	google.golang.org/grpc v1.71.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-// Downgrade all OpenTelemetry Collector packages to v0.119.0
 replace (
 	go.opentelemetry.io/collector/component => go.opentelemetry.io/collector/component v0.119.0
 	go.opentelemetry.io/collector/component/componenttest => go.opentelemetry.io/collector/component/componenttest v0.119.0
 	go.opentelemetry.io/collector/confmap => go.opentelemetry.io/collector/confmap v1.25.0
 	go.opentelemetry.io/collector/extension => go.opentelemetry.io/collector/extension v0.119.0
-	go.opentelemetry.io/collector/extension/extensionauth => go.opentelemetry.io/collector/extension/extensionauth v1.29.0
+	go.opentelemetry.io/collector/extension/auth => go.opentelemetry.io/collector/extension/auth v0.119.0
 	go.opentelemetry.io/collector/extension/extensiontest => go.opentelemetry.io/collector/extension/extensiontest v0.119.0
 	go.opentelemetry.io/collector/featuregate => go.opentelemetry.io/collector/featuregate v1.25.0
 	go.opentelemetry.io/collector/pdata => go.opentelemetry.io/collector/pdata v1.25.0
