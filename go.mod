@@ -69,4 +69,5 @@ replace (
 	go.opentelemetry.io/collector/extension/extensiontest => go.opentelemetry.io/collector/extension/extensiontest v0.119.0
 	go.opentelemetry.io/collector/featuregate => go.opentelemetry.io/collector/featuregate v1.25.0
 	go.opentelemetry.io/collector/pdata => go.opentelemetry.io/collector/pdata v1.25.0
+	go.opentelemetry.io/collector/service => go.opentelemetry.io/collector/service v0.119.0
 )
