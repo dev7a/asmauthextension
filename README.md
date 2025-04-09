@@ -81,3 +81,61 @@ The extension automatically refreshes the credentials from AWS Secrets Manager b
 1. Log a warning
 2. Continue using the previously retrieved credentials
 3. If no credentials were previously retrieved, use the fallback headers if provided
+
+## Development
+
+### Prerequisites
+
+- Go 1.24 or later
+- Git
+
+### Setup and Testing
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/dev7a/asmauthextension.git
+   cd asmauthextension
+   ```
+
+2. **Install dependencies**
+   ```bash
+   go mod download
+   go get go.opentelemetry.io/collector/cmd/mdatagen
+   go get github.com/dev7a/asmauthextension
+   go get -t github.com/dev7a/asmauthextension/...
+   ```
+
+3. **Generate metadata files**
+   ```bash
+   go run go.opentelemetry.io/collector/cmd/mdatagen ./metadata.yaml
+   ```
+   This will generate several files:
+   - documentation.md
+   - generated_component_test.go
+   - generated_package_test.go
+   - internal/metadata/* files
+
+4. **Build the extension**
+   ```bash
+   go build ./...
+   ```
+
+5. **Run tests**
+   ```bash
+   go test ./...
+   ```
+
+Alternatively, you can use the provided Makefile:
+```bash
+# Download dependencies
+make deps
+
+# Generate metadata files
+make generate
+
+# Build the extension
+make build
+
+# Run tests
+make test
+```
