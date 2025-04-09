@@ -29,7 +29,7 @@ var (
 	errInvalidSecretData = errors.New("invalid secret data: must be a JSON object with string values")
 )
 
-// secretsManagerAuthenticator implements the auth.Client interface
+// secretsManagerAuthenticator implements the extension.Extension interface
 type secretsManagerAuthenticator struct {
 	component.StartFunc
 	component.ShutdownFunc
@@ -48,7 +48,7 @@ type secretsManagerAuthenticator struct {
 }
 
 // newAuthenticator creates a new secretsManagerAuthenticator extension
-func newAuthenticator(cfg *Config, logger *zap.Logger) (*secretsManagerAuthenticator, error) {
+func newAuthenticator(cfg *Config, logger *zap.Logger) (extension.Extension, error) {
 	if err := cfg.Validate(); err != nil {
 		return nil, err
 	}
@@ -177,18 +177,18 @@ func (a *secretsManagerAuthenticator) fetchHeadersFromAWS(ctx context.Context) e
 	return nil
 }
 
-// PerRPCCredentials implements the auth.Client interface
-func (a *secretsManagerAuthenticator) PerRPCCredentials() (credentials.PerRPCCredentials, error) {
-	// We don't support gRPC authentication
-	return nil, nil
-}
-
-// RoundTripper implements the auth.Client interface
-func (a *secretsManagerAuthenticator) RoundTripper(base http.RoundTripper) (http.RoundTripper, error) {
+// roundTripper returns a custom RoundTripper that adds headers from Secrets Manager
+func (a *secretsManagerAuthenticator) roundTripper(base http.RoundTripper) (http.RoundTripper, error) {
 	return &secretsManagerRoundTripper{
 		base:          base,
 		authenticator: a,
 	}, nil
+}
+
+// perRPCCredentials returns nil as we don't support gRPC authentication
+func (a *secretsManagerAuthenticator) perRPCCredentials() (credentials.PerRPCCredentials, error) {
+	// We don't support gRPC authentication
+	return nil, nil
 }
 
 // secretsManagerRoundTripper is a custom http.RoundTripper that adds headers from Secrets Manager
@@ -213,8 +213,32 @@ func (rt *secretsManagerRoundTripper) RoundTrip(req *http.Request) (*http.Respon
 	return rt.base.RoundTrip(newReq)
 }
 
-// Ensure secretsManagerAuthenticator implements the required interfaces
-var (
-	_ extension.Extension = (*secretsManagerAuthenticator)(nil)
-	_ auth.Client         = (*secretsManagerAuthenticator)(nil)
-)
+// CreateClientAuth creates an auth.Client using the secretsManagerAuthenticator
+func CreateClientAuth(cfg *Config, logger *zap.Logger) (auth.Client, error) {
+	if err := cfg.Validate(); err != nil {
+		return nil, err
+	}
+
+	auth := &secretsManagerAuthenticator{
+		cfg:     cfg,
+		logger:  logger,
+		headers: make(map[string]string),
+		done:    make(chan struct{}),
+	}
+
+	// Set up the default refreshHeaders implementation
+	auth.refreshHeaders = auth.fetchHeadersFromAWS
+
+	// Use auth.NewClient with functional options
+	return auth.NewClient(), nil
+}
+
+// NewClient creates a new auth.Client using functional options
+func (a *secretsManagerAuthenticator) NewClient() auth.Client {
+	return auth.NewClient(
+		auth.WithClientRoundTripper(a.roundTripper),
+		auth.WithClientPerRPCCredentials(a.perRPCCredentials),
+		auth.WithClientStart(a.Start),
+		auth.WithClientShutdown(a.Shutdown),
+	)
+}

@@ -30,6 +30,10 @@ type Config struct {
 	// RefreshInterval is the interval at which the secret will be refreshed.
 	// Default: 1 minute
 	RefreshInterval time.Duration `mapstructure:"refresh_interval"`
+
+	// ClientAuth indicates whether this extension should be used as an auth.Client.
+	// Default: true
+	ClientAuth bool `mapstructure:"client_auth"`
 }
 
 // AssumeRoleConfig contains the configuration for assuming an IAM role.
@@ -53,5 +57,15 @@ func (cfg *Config) Validate() error {
 		cfg.RefreshInterval = time.Minute
 	}
 
+	// Default to client auth if not specified
+	if !cfg.ClientAuth {
+		cfg.ClientAuth = true
+	}
+
 	return nil
+}
+
+// IsClientAuth returns whether this extension should be used as an auth.Client.
+func (cfg *Config) IsClientAuth() bool {
+	return cfg.ClientAuth
 }

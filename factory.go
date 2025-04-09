@@ -36,5 +36,12 @@ func createDefaultConfig() component.Config {
 
 func createExtension(_ context.Context, set extension.Settings, cfg component.Config) (extension.Extension, error) {
 	config := cfg.(*Config)
+
+	// For client auth, use CreateClientAuth which returns auth.Client
+	if config.IsClientAuth() {
+		return CreateClientAuth(config, set.Logger)
+	}
+
+	// For regular extension, use newAuthenticator which returns extension.Extension
 	return newAuthenticator(config, set.Logger)
 }
