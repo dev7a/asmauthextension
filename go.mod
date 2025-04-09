@@ -59,15 +59,3 @@ require (
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace (
-	go.opentelemetry.io/collector/component => go.opentelemetry.io/collector/component v0.119.0
-	go.opentelemetry.io/collector/component/componenttest => go.opentelemetry.io/collector/component/componenttest v0.119.0
-	go.opentelemetry.io/collector/confmap => go.opentelemetry.io/collector/confmap v1.25.0
-	go.opentelemetry.io/collector/extension => go.opentelemetry.io/collector/extension v0.119.0
-	go.opentelemetry.io/collector/extension/auth => go.opentelemetry.io/collector/extension/auth v0.119.0
-	go.opentelemetry.io/collector/extension/extensiontest => go.opentelemetry.io/collector/extension/extensiontest v0.119.0
-	go.opentelemetry.io/collector/featuregate => go.opentelemetry.io/collector/featuregate v1.25.0
-	go.opentelemetry.io/collector/pdata => go.opentelemetry.io/collector/pdata v1.25.0
-	go.opentelemetry.io/collector/service => go.opentelemetry.io/collector/service v0.119.0
-)
